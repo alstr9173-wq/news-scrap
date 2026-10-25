@@ -63,7 +63,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 /* masthead */
 .mast{max-width:600px;margin:0 auto;padding-block:18px 6px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .mast h1{margin:0;font:400 26px/1 var(--font-head);letter-spacing:-.01em}
-.mast h1 span{background:linear-gradient(transparent 58%,var(--hl-fin) 58%,var(--hl-fin) 92%,transparent 92%);padding:0 2px}
+.mast h1 span{padding:0 2px}
 .mast p{margin:0;font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
 
 /* sticky period bar */
@@ -161,9 +161,9 @@ main{padding-block:6px 8px;display:flex;flex-direction:column;gap:22px}
 .a b{color:var(--ink);font-weight:500}
 .memo-l{font-size:12px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between}
 .memo-l em{font-style:normal;font-weight:400}
-.memo{width:100%;min-height:80px;resize:vertical;border:0;border-radius:10px;color:var(--ink);font:15px/28px var(--font-ui);padding:0 12px;
+.memo,.wnote{width:100%;min-height:80px;resize:vertical;border:0;border-radius:10px;color:var(--ink);font:15px/28px var(--font-ui);padding:0 12px;
   background-color:var(--sheet-2);background-image:linear-gradient(transparent 27px,var(--line) 27px);background-size:100% 28px;background-attachment:local}
-.memo:focus{outline:2px solid var(--ink);outline-offset:1px}
+.memo:focus,.wnote:focus{outline:2px solid var(--ink);outline-offset:1px}
 .memo:disabled{opacity:.6}
 .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .btn{height:40px;padding:0 14px;border-radius:10px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
@@ -185,6 +185,8 @@ main{padding-block:6px 8px;display:flex;flex-direction:column;gap:22px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;background:var(--sheet-2);border:1px solid var(--line)}
 .seg button{height:32px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--sheet);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.seg4{grid-template-columns:repeat(4,1fr)}
+.totop{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:6;height:40px;padding:0 14px;border-radius:20px;background:var(--ink);color:var(--paper);font-size:13px;font-weight:600;box-shadow:var(--shadow)}
 .sbox{display:flex;align-items:center;gap:8px;height:48px;padding:0 6px 0 14px;border-radius:14px;background:var(--sheet);border:1.5px solid var(--ink)}
 .sbox>svg{width:18px;height:18px;flex:none;color:var(--muted)}
 .sbox input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:16px/1.4 var(--font-ui);outline:none;-webkit-appearance:none;appearance:none;padding:0}
@@ -231,7 +233,7 @@ main{padding-block:6px 8px;display:flex;flex-direction:column;gap:22px}
 /* bottom tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--sheet);border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-.tabs-in{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr)}
+.tabs-in{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 .tab{height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;font-weight:500;color:var(--muted);position:relative}
 .tab svg{width:22px;height:22px}
 .tab[aria-current="page"]{color:var(--ink);font-weight:600}
@@ -270,8 +272,19 @@ main{padding-block:6px 8px;display:flex;flex-direction:column;gap:22px}
 .tgrid{display:flex;flex-direction:column;gap:8px}
 .tcard{width:100%;text-align:left;background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px}
 .tc-name{font:700 16px/1.4 var(--font-read)}
-.tc-short{font-size:13.5px;color:var(--muted);line-height:1.55}
-.dict{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 12px;border-radius:12px;border:1px dashed var(--line);background:var(--sheet);color:var(--ink);font-size:13.5px;font-weight:500;text-decoration:none;text-align:center}
+.tc-short{font-size:13.5px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* "모르는 단어" box: look a word up, then keep it or not */
+.ask{display:flex;gap:6px;align-items:center;background:var(--sheet-2);border:1px solid var(--line);border-radius:12px;padding:4px 4px 4px 12px}
+.ask:focus-within{border-color:var(--ink)}
+.ask input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:16px/1.4 var(--font-ui);outline:none;padding:6px 0;-webkit-appearance:none;appearance:none}
+.ask input::placeholder{color:var(--muted);font-size:14px}
+.ask button{flex:none;height:36px;padding:0 12px;border-radius:9px;background:var(--ink);color:var(--paper);font-size:13px;font-weight:600}
+.t-acts{display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+.t-acts .btn{flex:1;justify-content:center;min-width:120px}
+.t-note{font-size:12.5px;color:var(--muted);line-height:1.6}
+.t-note a{color:inherit}
+.btn-del{color:var(--stamp);border:1px solid var(--stamp-soft);background:var(--sheet)}
+.dict{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 12px;border-radius:12px;border:1px dashed var(--line);background:var(--sheet);color:var(--ink);font-size:13.5px;font-weight:500;text-decoration:none;text-align:center}
 </style>
 </head>
 <body>
@@ -301,17 +314,18 @@ main{padding-block:6px 8px;display:flex;flex-direction:column;gap:22px}
 
 <nav class="tabs" aria-label="보기"><div class="tabs-in" id="tabs"></div></nav>
 <div class="toast" id="toast" hidden></div>
+<button class="totop" id="totop" hidden>↑ 맨 위로</button>
 <div class="sheet-bg" id="sheetbg" hidden></div>
 <section class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-h">
   <div class="grab"></div>
   <h2 id="sheet-h">설정</h2>
   <p class="sh-note" id="updinfo">기사를 불러오는 중</p>
   <button class="row" id="refresh">새 기사 불러오기<small>아침 8시 30분쯤 그날 기사 네 편이 올라와요</small></button>
-  <button class="row" id="export">기록 백업하기<small>읽음 · 즐겨찾기 · 내 답변을 파일로 저장해요</small></button>
+  <button class="row" id="export">기록 백업하기<small>읽음 · 즐겨찾기 · 내 답변 · 내 용어집을 파일로 저장해요</small></button>
   <label class="row" for="importf">백업 불러오기<small>새 폰이나 다른 브라우저로 옮길 때 써요</small></label>
   <input class="vh" type="file" id="importf" accept="application/json,.json">
   <div class="hint" id="installhint"><b>홈 화면에 추가하기</b><br>iPhone: Safari 아래 공유 버튼 → ‘홈 화면에 추가’<br>Android: Chrome 오른쪽 위 ⋮ → ‘홈 화면에 추가’ 또는 ‘앱 설치’</div>
-  <div class="hint">읽음·즐겨찾기·내 답변은 이 기기에만 저장돼요. 가끔 백업해 두세요.</div>
+  <div class="hint">읽음·즐겨찾기·내 답변·내 용어집은 이 기기에만 저장돼요. 가끔 백업해 두세요.</div>
   <button class="close" id="sheetclose">닫기</button>
 </section>
 <div class="sheet-bg" id="tsheetbg" hidden></div>
@@ -344,11 +358,11 @@ const RIB='<svg viewBox="0 0 22 34"><path d="M1 0h20v32l-10-7-10 7z"/></svg>';
 const CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const STAMP='<svg class="stamp" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="50" y="47" text-anchor="middle" font-family="Black Han Sans,sans-serif" font-size="25" fill="currentColor">출석</text><text x="50" y="68" text-anchor="middle" font-family="IBM Plex Sans KR,sans-serif" font-weight="600" font-size="11" fill="currentColor" letter-spacing="1">완독</text></svg>';
-const TABS=[["day","일간"],["period","기간"],["issues","이슈"],["terms","용어"],["star","즐겨찾기"],["search","검색"]];
-const PERIODS=["week","month","year"],VIEWS=["day","week","month","year","issues","terms","star","search"];
+const TABS=[["day","일간"],["period","기간"],["terms","용어"],["star","즐겨찾기"],["search","검색"]];
+const PERIODS=["week","month","year"],VIEWS=["day","week","month","year","terms","star","search"];
 const isP=v=>PERIODS.includes(v);
 
-const S={articles:new Map(),marks:new Map(),issues:new Map(),terms:new Map(),drafts:new Map(),open:new Set(),view:"day",mode:"week",issue:null,query:"",field:"전체",cursor:null,status:"loading",db:null,canWrite:true};
+const S={articles:new Map(),marks:new Map(),issues:new Map(),terms:new Map(),drafts:new Map(),open:new Set(),view:"day",mode:"week",issue:null,query:"",span:"all",more:10,tmore:5,wmore:20,field:"전체",cursor:null,status:"loading",db:null,canWrite:true};
 try{const v=localStorage.getItem("scrap.view");if(v&&VIEWS.includes(v))S.view=v;const md=localStorage.getItem("scrap.mode");if(isP(md))S.mode=md;if(isP(S.view))S.mode=S.view;
   const f=localStorage.getItem("scrap.field");if(f&&(f==="전체"||FK[f]))S.field=f;}catch(e){}
 function remember(){try{localStorage.setItem("scrap.view",S.view);localStorage.setItem("scrap.mode",S.mode);localStorage.setItem("scrap.field",S.field);}catch(e){}}
@@ -432,9 +446,20 @@ const artText=a=>[a.title,...(Array.isArray(a.summary)?a.summary:[]),a.q,a.a].fi
 function termArts(id){return arts().filter(a=>termSpans(artText(a)).some(x=>x[2]===id)).sort((x,y)=>x.date<y.date?1:x.date>y.date?-1:(FORDER[x.field]??9)-(FORDER[y.field]??9));}
 const dictURL=q=>"https://terms.naver.com/search.naver?query="+encodeURIComponent(q);
 const termList=()=>[...S.terms.entries()].map(([id,t])=>Object.assign({id},t));
-function tcard(t){const n=termArts(t.id).length;
-  return '<button class="tcard f-'+(FK[t.field]||"x")+'" data-topen="'+esc(t.id)+'"><span class="t-top"><span class="tag">'+esc(t.field||"용어")+'</span>'+(n?'<span class="num">기사 '+n+'편</span>':'')+'</span>'
-    +'<span class="tc-name">'+T(t.term)+'</span>'+(t.short?'<span class="tc-short">'+T(t.short)+'</span>':'')+'</button>';}
+function tcard(t){const n=termArts(t.id).length,gist=t.short||t.desc;
+  return '<button class="tcard f-'+(FK[t.field]||"x")+'" data-topen="'+esc(t.id)+'"><span class="t-top">'+(t.field?'<span class="tag">'+esc(t.field)+'</span>':'')+(n?'<span class="num">기사 '+n+'편</span>':'')+'<span>'+esc(fmtAdded(t.addedAt))+'</span></span>'
+    +'<span class="tc-name">'+T(t.term)+'</span>'+(gist?'<span class="tc-short">'+T(gist)+'</span>':'<span class="tc-short">뜻 없이 저장한 단어 · 눌러서 다시 찾기</span>')+'</button>';}
+const fmtAdded=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||"")?fmtD(s)+" 추가":"";
+
+/* my glossary: words I looked up and chose to keep, stored on this device like marks */
+const WKEY="scrap.words";
+function loadWords(){try{const o=JSON.parse(localStorage.getItem(WKEY)||"{}");return new Map(Object.entries(o&&typeof o==="object"?o:{}).filter(([k,v])=>v&&typeof v==="object"&&v.term));}catch(e){return new Map();}}
+function saveWords(){try{localStorage.setItem(WKEY,JSON.stringify(Object.fromEntries(S.terms)));return true;}catch(e){toast("이 기기에 저장하지 못했어요. 저장 공간을 확인해 주세요");return false;}}
+const norm=s=>String(s||"").toLowerCase().replace(/[\s()]/g,"");
+function findIn(map,q){const n=norm(q);if(!n)return null;
+  for(const[id,t]of map){if([t.term,...(Array.isArray(t.aliases)?t.aliases:[])].some(a=>norm(a)===n))return id;}
+  return null;}
+const askForm=(aid,ph)=>'<form class="ask" data-ask="'+esc(aid)+'"><input type="text" placeholder="'+esc(ph)+'" aria-label="모르는 단어" enterkeyhint="search" autocomplete="off" maxlength="40"><button type="submit">뜻 찾기</button></form>';
 
 /* attendance: a day counts when every article scrapped that day is read */
 function dayInfo(){
@@ -480,7 +505,7 @@ function label(){
   if(S.view==="star"){const n=[...S.marks.values()].filter(m=>m&&m.star).length;return["즐겨찾기",n?"모아 둔 기사 "+n+"편":""];}
   if(S.view==="issues"){if(S.issue){const i=ISS.get(S.issue);return[i?i.name:"이슈","이슈 흐름"];}return["이슈 흐름",ISS.size?"같은 주제 기사를 시간순으로":""];}
   if(S.view==="search")return["검색",""];
-  if(S.view==="terms")return["용어집",S.terms.size?"밑줄 친 낱말을 눌러도 뜻이 나와요":""];
+  if(S.view==="terms")return["내 용어집",S.terms.size?"모은 단어 "+S.terms.size+"개":"모르는 단어를 찾아 모아 보세요"];
   const d=toD(S.cursor);
   if(S.view==="day")return[(d.getMonth()+1)+"월 "+d.getDate()+"일 "+WD[d.getDay()]+"요일",d.getFullYear()+"년"];
   if(S.view==="week"){const s=weekStart(d),e=addDays(s,6),th=addDays(s,3);
@@ -547,6 +572,7 @@ function card(a,expanded,opts){
     +'<button class="more" data-act="toggle">'+(memo?"내 답변 있음 · ":"")+'펼쳐 보기'+CHEV+'</button></article>';return h;}
   h+=(sum.length?'<ul class="sum">'+sum.map(s=>'<li>'+R(s,seen)+'</li>').join("")+'</ul>':"")
     +(a.q?'<div class="qa"><div class="qa-l">면접 포인트</div><p class="q">'+R(a.q,seen)+'</p>'+(a.a?'<p class="a"><b>답변 방향</b> '+R(a.a,seen)+'</p>':"")+'</div>':"")
+    +askForm(a.id,"모르는 단어 입력 · 예: 기저효과")
     +(!opts.inIssue&&iss?issueChip(a):"")
     +'<div><label class="memo-l" for="memo-'+esc(a.id)+'"><span>내 답변</span><em id="st-'+esc(a.id)+'"></em></label>'
     +'<textarea class="memo" id="memo-'+esc(a.id)+'" data-id="'+esc(a.id)+'" rows="3" placeholder="내가 면접에서 할 답을 적어 두세요"'+(can?"":" disabled")+'>'+esc(memo)+'</textarea></div>'
@@ -592,6 +618,9 @@ function issuesView(){
   arr.sort((x,y)=>x.last<y.last?1:x.last>y.last?-1:y.items.length-x.items.length);
   return '<div class="stats"><span class="num">이슈 '+arr.length+'개</span><span>최근 소식순</span></div>'+arr.map(issueCard).join("");
 }
+const SPANS=[["all","전체"],["7","1주"],["30","1달"],["90","3달"]],PAGE={a:10,t:5,w:20},MORE={a:"more",t:"tmore",w:"wmore"};
+const moreBtn=(k,left,unit)=>left>0?'<button class="dict" data-more="'+k+'">더 보기 · '+left+unit+' 남음</button>':"";
+function resetPages(){S.more=PAGE.a;S.tmore=PAGE.t;S.wmore=PAGE.w;}
 function searchView(){
   const ts=terms();
   if(!ts.length){
@@ -603,19 +632,25 @@ function searchView(){
     if(!rec.length)h+='<h4>이런 낱말로 찾아보세요</h4>'+pills(["금리","PF","미분양","IFRS18","원가율"]);
     return h+'</div>';
   }
-  const res=list().filter(a=>{const h=hay(a);return ts.every(t=>h.includes(t));});
+  /* long result lists: narrow by period, then show a page at a time */
+  const since=S.span==="all"?"":toS(addDays(toD(latestDate()),-(+S.span-1)));
+  const res=list().filter(a=>{if(since&&a.date<since)return false;const h=hay(a);return ts.every(t=>h.includes(t));});
   const tm=termList().filter(t=>{const h=[t.term,(Array.isArray(t.aliases)?t.aliases:[]).join(" "),t.short,t.desc].filter(Boolean).join("\n").toLowerCase();return ts.every(x=>h.includes(x));});
-  const q=S.query.trim(),dict='<a class="dict" href="'+esc(dictURL(q))+'" target="_blank" rel="noopener">‘'+esc(q)+'’ 지식백과에서 찾기 ↗</a>';
-  if(!res.length&&!tm.length)return empty("‘"+esc(q)+"’ 결과가 없어요",S.field!=="전체"?"분야를 ‘전체’로 바꾸거나 다른 낱말로 찾아보세요.":"다른 낱말로 찾아보세요. 띄어 쓴 낱말은 모두 들어간 기사만 찾아요.")+dict;
-  return (tm.length?'<div class="stats"><span class="num">용어 '+tm.length+'개</span><span>누르면 뜻이 나와요</span></div><div class="tgrid">'+tm.map(tcard).join("")+'</div>':"")
-    +(res.length?'<div class="stats"><span class="num">'+res.length+'편 찾음</span><span>최신순</span></div>'+groupByDate(res,false):"")+dict;
+  const q=S.query.trim(),dict='<button class="dict" data-look="'+esc(q)+'">‘'+esc(q)+'’ 뜻 찾기</button>';
+  const spans='<div class="seg seg4" role="group" aria-label="기간">'+SPANS.map(([k,l])=>'<button data-span="'+k+'" aria-pressed="'+(S.span===k)+'">'+l+'</button>').join("")+'</div>';
+  if(!res.length&&!tm.length)return spans+empty("‘"+esc(q)+"’ 결과가 없어요",S.span!=="all"?"기간을 ‘전체’로 넓혀 보세요.":S.field!=="전체"?"분야를 ‘전체’로 바꾸거나 다른 낱말로 찾아보세요.":"다른 낱말로 찾아보세요. 띄어 쓴 낱말은 모두 들어간 기사만 찾아요.")+dict;
+  return (tm.length?'<div class="stats"><span class="num">내 용어집 '+tm.length+'개</span><span>누르면 뜻이 나와요</span></div><div class="tgrid">'+tm.slice(0,S.tmore).map(tcard).join("")+'</div>'+moreBtn("t",tm.length-S.tmore,"개"):"")
+    +spans+(res.length?'<div class="stats"><span class="num">'+res.length+'편 찾음</span><span>최신순</span></div>'+groupByDate(res.slice(0,S.more),false)+moreBtn("a",res.length-S.more,"편")
+      :'<div class="stats"><span>이 기간엔 맞는 기사가 없어요</span></div>')+dict;
 }
 function termsView(){
+  const form=askForm("","모르는 단어를 입력해 뜻 찾기");
   let arr=termList();
   if(S.field!=="전체")arr=arr.filter(t=>t.field===S.field);
-  if(!arr.length)return empty(S.field!=="전체"?esc(S.field)+" 용어가 아직 없어요":"아직 모은 용어가 없어요","기사에 나온 어려운 용어가 매일 여기에 쌓여요.");
+  if(!arr.length)return form+(S.terms.size?empty(esc(S.field)+" 단어가 아직 없어요","분야를 ‘전체’로 바꾸면 모은 단어를 모두 볼 수 있어요."):
+    empty("아직 모은 단어가 없어요","기사를 펼쳐 ‘모르는 단어’ 칸에 입력해 보세요. 뜻을 보고 ‘용어집에 추가’를 누른 단어만 여기에 모여요."));
   arr.sort((x,y)=>{const a=String(x.addedAt||""),b=String(y.addedAt||"");return a<b?1:a>b?-1:String(x.term).localeCompare(String(y.term),"ko");});
-  return '<div class="stats"><span class="num">용어 '+arr.length+'개</span><span>최근 추가순 · 가나다순</span></div><div class="tgrid">'+arr.map(tcard).join("")+'</div>';
+  return form+'<div class="stats"><span class="num">단어 '+arr.length+'개</span><span>최근 추가순</span></div><div class="tgrid">'+arr.slice(0,S.wmore).map(tcard).join("")+'</div>'+moreBtn("w",arr.length-S.wmore,"개");
 }
 
 function renderMain(){
@@ -654,14 +689,13 @@ function render(){
   $("seg").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===S.view)));
   $("prev").hidden=$("next").hidden=!(dated||inDetail);
   $("next").style.visibility=inDetail?"hidden":"";
-  $("prev").setAttribute("aria-label",inDetail?"이슈 목록으로":"이전 기간");
+  $("prev").setAttribute("aria-label",inDetail?"돌아가기":"이전 기간");
   $("prev").disabled=inDetail?false:!(stepping&&canStep(-1));$("next").disabled=!(stepping&&canStep(1));
   let notLatest=false;
   if(dated&&S.status==="ready"&&S.articles.size){const[r0,r1]=range(S.view,S.cursor),l=latestDate();notLatest=!(l>=r0&&l<=r1);}
   $("chips").innerHTML='<button class="chip all" data-field="전체" aria-pressed="'+(S.field==="전체")+'"><span>전체</span></button>'
     +FIELDS.map(f=>'<button class="chip" data-field="'+f[0]+'" aria-pressed="'+(S.field===f[0])+'" style="--h:var('+f[2]+')"><span>'+f[0]+'</span></button>').join("")
     +(notLatest?'<button class="latest" data-act="latest">최신으로</button>':'');
-  if(S.status==="ready"&&S.articles.size){const info=dayInfo(),s=streak(info);$("mastp").innerHTML=s?'연속 출석 <b class="num">'+s+'</b>일<br>매일 아침 네 편':'금융 · 경제 · 건설 · 회계<br>매일 아침 네 편';}
   $("main").innerHTML=renderMain();
   const nStar=[...S.marks.values()].filter(m=>m&&m.star).length;
   $("tabs").innerHTML=TABS.map(([k,l])=>'<button class="tab" data-view="'+k+'"'+(S.view===k||(k==="period"&&P)?' aria-current="page"':'')+'>'+ICON[k]+'<span>'+l+'</span>'+(k==="star"&&nStar?'<span class="badge num">'+nStar+'</span>':'')+'</button>').join("");
@@ -683,18 +717,21 @@ function patch(id,o){const m=Object.assign({},mk(id),o);S.marks.set(id,m);return
 
 document.addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.id==="prev"&&S.view==="issues"&&S.issue){S.issue=null;render();window.scrollTo({top:0});return;}
+  if(b.id==="prev"&&S.view==="issues"&&S.issue){const k=S.back||{};S.issue=null;S.view=VIEWS.includes(k.view)?k.view:"day";if(k.cursor)S.cursor=k.cursor;remember();render();window.scrollTo({top:0});return;}
   if(b.id==="qx"){S.query="";$("q").value="";b.hidden=true;render();$("q").focus();return;}
   if(b.dataset.mode){S.view=S.mode=b.dataset.mode;remember();render();window.scrollTo({top:0});return;}
-  if(b.dataset.q!=null){S.query=b.dataset.q;$("q").value=S.query;$("qx").hidden=!S.query;saveRecent(S.query);render();window.scrollTo({top:0});return;}
+  if(b.dataset.q!=null){resetPages();S.query=b.dataset.q;$("q").value=S.query;$("qx").hidden=!S.query;saveRecent(S.query);render();window.scrollTo({top:0});return;}
   if(b.id==="prev"||b.id==="next"){const t=step(b.id==="prev"?-1:1);if(t){S.cursor=t;render();window.scrollTo({top:0});}return;}
   if(b.dataset.view){const nv=b.dataset.view;S.view=nv==="period"?S.mode:nv;if(nv==="issues")S.issue=null;
     if(S.view==="day"&&!allDates().includes(S.cursor)){const[r0,r1]=range("month",S.cursor),inM=allDates().filter(d=>d>=r0&&d<=r1);S.cursor=inM.length?inM[inM.length-1]:latestDate();}
-    remember();render();window.scrollTo({top:0});if(nv==="search"&&!S.query)setTimeout(()=>{try{$("q").focus();}catch(e){}},0);return;}
-  if(b.dataset.field){S.field=b.dataset.field;remember();render();return;}
+    resetPages();remember();render();window.scrollTo({top:0});if(nv==="search"&&!S.query)setTimeout(()=>{try{$("q").focus();}catch(e){}},0);return;}
+  if(b.dataset.field){S.field=b.dataset.field;resetPages();remember();render();return;}
+  if(b.dataset.span){S.span=b.dataset.span;S.more=PAGE.a;render();return;}
+  if(b.dataset.more){const k=b.dataset.more;S[MORE[k]]+=PAGE[k];render();return;}
   const act=b.dataset.act;
   if(act==="latest"){S.cursor=latestDate();render();window.scrollTo({top:0});return;}
-  if(act==="issue"){S.view="issues";S.issue=b.dataset.iss;remember();render();window.scrollTo({top:0});return;}
+  /* the issues tab is gone; a 흐름 chip opens one thread and the back arrow returns to where it was tapped */
+  if(act==="issue"){if(S.view!=="issues")S.back={view:S.view,cursor:S.cursor};S.view="issues";S.issue=b.dataset.iss;render();window.scrollTo({top:0});return;}
   if(act==="month"){S.view=S.mode="month";S.cursor=b.dataset.m;remember();render();window.scrollTo({top:0});return;}
   const c=b.closest(".card");if(!c)return;const id=c.dataset.id;
   if(act==="toggle"){S.open.has(id)?S.open.delete(id):S.open.add(id);render();return;}
@@ -719,17 +756,16 @@ document.addEventListener("focusout",e=>{
 });
 
 let qT=null;
-$("q").addEventListener("input",()=>{S.query=$("q").value;$("qx").hidden=!S.query;clearTimeout(qT);qT=setTimeout(render,120);});
+$("q").addEventListener("input",()=>{resetPages();S.query=$("q").value;$("qx").hidden=!S.query;clearTimeout(qT);qT=setTimeout(render,120);});
 $("q").addEventListener("change",()=>{if(S.query.trim())saveRecent(S.query);});
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();if(S.query.trim())saveRecent(S.query);$("q").blur();}});
 
-S.marks=loadMarks();S.canWrite=true;
+S.marks=loadMarks();S.canWrite=true;S.terms=loadWords();buildTermIndex();
 async function loadData(quiet){
   try{
-    const [ar,ir,tr]=await Promise.all([fetch("data/articles.json",{cache:"no-cache"}),fetch("data/issues.json",{cache:"no-cache"}),fetch("data/terms.json",{cache:"no-cache"}).catch(()=>null)]);
+    const [ar,ir]=await Promise.all([fetch("data/articles.json",{cache:"no-cache"}),fetch("data/issues.json",{cache:"no-cache"})]);
     if(!ar.ok)throw new Error("articles "+ar.status);
-    const rows=await ar.json(),iss=ir.ok?await ir.json():{},tj=tr&&tr.ok?await tr.json().catch(()=>({})):{};
-    S.terms=new Map(Object.entries(tj&&typeof tj==="object"?tj:{}).filter(([k,v])=>v&&typeof v==="object"&&v.term));buildTermIndex();
+    const rows=await ar.json(),iss=ir.ok?await ir.json():{};
     const before=S.articles.size,first=S.status!=="ready";
     S.articles=new Map((Array.isArray(rows)?rows:[]).filter(x=>x&&x.id&&x.date).map(x=>[x.id,x]));
     S.issues=new Map(Object.entries(iss&&typeof iss==="object"?iss:{}));
@@ -756,7 +792,7 @@ async function seedOnce(){
 /* settings sheet */
 function openSheet(on){$("sheet").hidden=!on;$("sheetbg").hidden=!on;if(on){updInfo();$("sheetclose").focus();}else $("gear").focus();}
 async function exportMarks(){
-  const data={app:"시사 스크랩",version:1,exportedAt:new Date().toISOString(),marks:Object.fromEntries(S.marks)};
+  const data={app:"시사 스크랩",version:1,exportedAt:new Date().toISOString(),marks:Object.fromEntries(S.marks),words:Object.fromEntries(S.terms)};
   const name="sisa-scrap-backup-"+todayS()+".json",blob=new Blob([JSON.stringify(data,null,1)],{type:"application/json"});
   try{const f=new File([blob],name,{type:"application/json"});
     if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"시사 스크랩 백업"});toast("백업 파일을 저장했어요");return;}}
@@ -769,7 +805,9 @@ $("importf").addEventListener("change",async e=>{
   try{const o=JSON.parse(await f.text());const src=o&&o.marks&&typeof o.marks==="object"?o.marks:o;let n=0;
     Object.entries(src||{}).forEach(([k,v])=>{if(!v||typeof v!=="object")return;const cur=S.marks.get(k);
       if(!cur||String(v.updatedAt||"")>String(cur.updatedAt||"")){S.marks.set(k,v);n++;}});
-    persist();render();toast(n?"기록 "+n+"개를 불러왔어요":"새로 불러올 기록이 없어요");}
+    if(o&&o.words&&typeof o.words==="object")Object.entries(o.words).forEach(([k,v])=>{if(!v||typeof v!=="object"||!v.term)return;const cur=S.terms.get(k);
+      if(!cur||String(v.updatedAt||"")>String(cur.updatedAt||"")){S.terms.set(k,v);n++;}});
+    persist();saveWords();buildTermIndex();render();toast(n?"기록 "+n+"개를 불러왔어요":"새로 불러올 기록이 없어요");}
   catch(err){toast("백업 파일을 읽지 못했어요. 시사 스크랩에서 만든 파일인지 확인해 주세요");}
   e.target.value="";
 });
@@ -792,22 +830,83 @@ document.addEventListener("click",async e=>{
   else if(id==="installhow"){if(deferredPrompt){deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(err){}deferredPrompt=null;maybeBanner();}else openSheet(true);}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("sheet").hidden)openSheet(false);});
-/* term sheet */
-let termFrom=null;
-function openTerm(id){const t=S.terms.get(id);if(!t)return;
-  const k=FK[t.field]||"x",rel=termArts(id);
-  $("tbody").innerHTML='<div class="t-top f-'+k+'"><span class="tag">'+esc(t.field||"용어")+'</span></div>'
+/* word sheet: look a word up, then keep it with my own note or just close */
+let termFrom=null,LK=null,lookSeq=0,wT=null;
+function showTermSheet(html){$("tbody").innerHTML=html;
+  if($("tsheet").hidden)termFrom=document.activeElement;
+  $("tsheet").hidden=$("tsheetbg").hidden=false;$("tsheet").scrollTop=0;$("tclose").focus({preventScroll:true});}
+function closeTerm(back){flushNote();LK=null;$("tsheet").hidden=$("tsheetbg").hidden=true;
+  if(back&&termFrom&&termFrom.isConnected)try{termFrom.focus({preventScroll:true});}catch(e){}}
+const dictBtn=w=>'<a class="btn btn-ghost" href="'+esc(dictURL(w))+'" target="_blank" rel="noopener">지식백과 ↗</a>';
+const wikiNote=(title,url)=>'<p class="t-note">위키백과 <a href="'+esc(url)+'" target="_blank" rel="noopener">‘'+esc(title)+'’ 문서</a>에서 가져온 뜻이에요</p>';
+/* Korean Wikipedia: exact page first, then the best search hit; trimmed to a few sentences */
+const clip=s=>{s=String(s||"").replace(/\s+/g," ").trim();if(s.length<=280)return s;const c=s.slice(0,280),i=c.lastIndexOf(". ");return (i>80?c.slice(0,i+1):c+"…");};
+async function wiki(q){
+  const page=async t=>{const r=await fetch("https://ko.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(t.replace(/ /g,"_"))+"?redirect=true");
+    if(!r.ok)return null;const j=await r.json();return j&&j.type==="standard"&&j.extract?j:null;};
+  let j=await page(q);
+  if(!j){const r=await fetch("https://ko.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=3&srsearch="+encodeURIComponent(q));
+    /* a search hit only counts if it is plainly about the word, so nonsense input finds nothing */
+    const fits=c=>{const a=norm(c.title),b=norm(q);return a.includes(b)||b.includes(a)||norm(c.extract).includes(b);};
+    if(r.ok){const s=await r.json();for(const h of(s.query&&s.query.search)||[]){const c=await page(h.title);if(c&&fits(c)){j=c;break;}}}}
+  if(!j)return null;
+  return{title:j.title,text:clip(j.extract),url:(j.content_urls&&j.content_urls.mobile&&j.content_urls.mobile.page)||"https://ko.wikipedia.org/wiki/"+encodeURIComponent(j.title)};
+}
+async function lookup(q,from){
+  q=String(q||"").trim().replace(/\s+/g," ").slice(0,40);if(!q)return;
+  const own=findIn(S.terms,q);if(own){openTerm(own);return;}
+  const seq=++lookSeq;LK={q,from,state:"loading"};drawLookup();
+  let w=null,off=false;try{w=await wiki(q);}catch(e){off=true;}
+  if(seq!==lookSeq||!LK)return;
+  LK.state=w?"found":off?"offline":"none";if(w)Object.assign(LK,w);drawLookup();
+}
+function drawLookup(){const L=LK;if(!L)return;
+  let h='<div class="t-top"><span>뜻 찾기</span></div><h2 id="tsheet-h">'+esc(L.q)+'</h2>';
+  if(L.state==="loading"){showTermSheet(h+'<p class="t-desc">뜻을 찾는 중이에요…</p>');return;}
+  h+=(L.state==="found"?'<p class="t-desc">'+esc(L.text)+'</p>'+wikiNote(L.title,L.url)
+      :'<p class="t-desc">'+(L.state==="offline"?"인터넷에 연결되지 않아 뜻을 찾지 못했어요.":"바로 보여 줄 뜻을 찾지 못했어요. 지식백과에서 찾아보고, 아래에 직접 적어 저장할 수 있어요.")+'</p>')
+    +'<label class="memo-l" for="wnew"><span>용어집에 적을 뜻</span><em>고쳐 써도 돼요</em></label>'
+    +'<textarea class="wnote" id="wnew" rows="4" placeholder="뜻이나 기억할 내용을 적어 두세요">'+esc(L.state==="found"?L.text:"")+'</textarea>'
+    +'<div class="t-acts"><button class="btn btn-read" data-wadd>용어집에 추가</button>'+dictBtn(L.q)+'</div>'
+    +'<p class="t-note">추가하지 않고 닫으면 찾아보기만 하고 끝나요.</p>';
+  showTermSheet(h);
+}
+function openTerm(id){const t=S.terms.get(id);if(!t)return;LK=null;
+  const rel=termArts(id),from=t.from&&S.articles.get(t.from);
+  showTermSheet('<div class="t-top"><span>내 용어집</span><span>'+esc(fmtAdded(t.addedAt))+'</span></div>'
     +'<h2 id="tsheet-h">'+esc(t.term)+'</h2>'
-    +(t.short?'<p class="t-short">'+esc(t.short)+'</p>':'')
-    +(t.desc?'<p class="t-desc">'+esc(t.desc)+'</p>':'')
-    +(t.interview?'<div class="qa f-'+k+'"><div class="qa-l">면접 한마디</div><p class="a">'+esc(t.interview)+'</p></div>':'')
-    +(rel.length?'<div class="t-sec"><div class="qa-l">이 용어가 나온 기사</div>'+rel.map(a=>'<button class="row" data-goto="'+esc(a.id)+'">'+esc(a.title)+'<small>'+fmtLong(a.date)+' · '+esc(a.field)+'</small></button>').join("")+'</div>':'')
-    +'<a class="dict" href="'+esc(dictURL(String(t.term).replace(/[()]/g," ").replace(/\s+/g," ").trim()))+'" target="_blank" rel="noopener">지식백과에서 더 보기 ↗</a>';
-  termFrom=document.activeElement;$("tsheet").hidden=$("tsheetbg").hidden=false;$("tsheet").scrollTop=0;$("tclose").focus({preventScroll:true});}
-function closeTerm(back){$("tsheet").hidden=$("tsheetbg").hidden=true;if(back&&termFrom&&termFrom.isConnected)try{termFrom.focus({preventScroll:true});}catch(e){}}
+    +'<label class="memo-l" for="wmemo"><span>뜻 · 내 메모</span><em id="wst"></em></label>'
+    +'<textarea class="wnote" id="wmemo" data-wid="'+esc(id)+'" rows="4" placeholder="뜻이나 기억할 내용을 적어 두세요">'+esc(t.desc||"")+'</textarea>'
+    +(t.url?wikiNote(t.title||t.term,t.url):'')
+    +(from?'<p class="t-note">‘'+esc(from.title)+'’ 기사를 읽다 추가했어요</p>':'')
+    +(rel.length?'<div class="t-sec"><div class="qa-l">이 단어가 나온 기사</div>'+rel.map(a=>'<button class="row" data-goto="'+esc(a.id)+'">'+esc(a.title)+'<small>'+fmtLong(a.date)+' · '+esc(a.field)+'</small></button>').join("")+'</div>':'')
+    +'<div class="t-acts">'+dictBtn(t.term)+'<button class="btn btn-del" data-wdel="'+esc(id)+'">용어집에서 삭제</button></div>');
+}
+function addWord(){const L=LK;if(!L||L.state==="loading")return;
+  const id="w-"+norm(L.q),w={term:L.q,desc:($("wnew")?$("wnew").value:"").trim(),addedAt:todayS(),updatedAt:new Date().toISOString()};
+  if(L.state==="found"){w.title=L.title;w.url=L.url;}
+  if(L.from&&S.articles.has(L.from))w.from=L.from;
+  S.terms.set(id,w);if(!saveWords()){S.terms.delete(id);return;}
+  buildTermIndex();render();openTerm(id);toast("용어집에 추가했어요");
+}
+function delWord(id){const t=S.terms.get(id);if(!t)return;
+  if(!confirm("‘"+t.term+"’을(를) 용어집에서 삭제할까요?"))return;
+  clearTimeout(wT);S.terms.delete(id);saveWords();buildTermIndex();closeTerm(false);render();toast("용어집에서 삭제했어요");
+}
+function saveNote(id,v){const w=S.terms.get(id);if(!w)return;v=v.trim();if(v===(w.desc||""))return;
+  w.desc=v;w.updatedAt=new Date().toISOString();if(saveWords()){const s=$("wst");if(s)s.textContent="저장됨";render();}}
+function flushNote(){clearTimeout(wT);const m=$("wmemo");if(m&&!$("tsheet").hidden)saveNote(m.dataset.wid,m.value);}
+document.addEventListener("input",e=>{if(e.target.id!=="wmemo")return;const s=$("wst");if(s)s.textContent="입력 중";
+  clearTimeout(wT);wT=setTimeout(()=>saveNote(e.target.dataset.wid,e.target.value),700);});
+document.addEventListener("focusout",e=>{if(e.target.id==="wmemo"){clearTimeout(wT);saveNote(e.target.dataset.wid,e.target.value);}});
+document.addEventListener("submit",e=>{const f=e.target.closest("form.ask");if(!f)return;e.preventDefault();
+  const i=f.querySelector("input"),v=i.value;i.value="";i.blur();lookup(v,f.dataset.ask||"");});
 document.addEventListener("click",e=>{
   const tm=e.target.closest(".term,[data-topen]");if(tm){e.preventDefault();openTerm(tm.dataset.term||tm.dataset.topen);return;}
   if(e.target.id==="tsheetbg"||e.target.id==="tclose"){closeTerm(true);return;}
+  if(e.target.closest("[data-wadd]")){addWord();return;}
+  const dl=e.target.closest("[data-wdel]");if(dl){delWord(dl.dataset.wdel);return;}
+  const lk=e.target.closest("[data-look]");if(lk){lookup(lk.dataset.look,"");return;}
   const g=e.target.closest("[data-goto]");if(!g)return;
   const a=S.articles.get(g.dataset.goto);closeTerm(false);if(!a)return;
   S.view="day";S.cursor=a.date;remember();render();
@@ -818,6 +917,10 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!$("tsheet").hidden){closeTerm(true);return;}
   const t=e.target;if((e.key==="Enter"||e.key===" ")&&t.classList&&t.classList.contains("term")){e.preventDefault();openTerm(t.dataset.term);}
 });
+/* back-to-top for long lists */
+let topT=null;
+window.addEventListener("scroll",()=>{if(topT)return;topT=requestAnimationFrame(()=>{topT=null;$("totop").hidden=window.scrollY<1200;});},{passive:true});
+$("totop").addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&S.status==="ready")loadData(true);});
 if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});
 
