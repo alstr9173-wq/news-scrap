@@ -444,7 +444,6 @@ function markTerms(s,seen){s=String(s==null?"":s);let h="",p=0;
 const R=(s,seen)=>terms().length?hl(s):markTerms(s,seen);
 const artText=a=>[a.title,...(Array.isArray(a.summary)?a.summary:[]),a.q,a.a].filter(Boolean).join("\n");
 function termArts(id){return arts().filter(a=>termSpans(artText(a)).some(x=>x[2]===id)).sort((x,y)=>x.date<y.date?1:x.date>y.date?-1:(FORDER[x.field]??9)-(FORDER[y.field]??9));}
-const dictURL=q=>"https://terms.naver.com/search.naver?query="+encodeURIComponent(q);
 const termList=()=>[...S.terms.entries()].map(([id,t])=>Object.assign({id},t));
 function tcard(t){const n=termArts(t.id).length,gist=t.short||t.desc;
   return '<button class="tcard f-'+(FK[t.field]||"x")+'" data-topen="'+esc(t.id)+'"><span class="t-top">'+(t.field?'<span class="tag">'+esc(t.field)+'</span>':'')+(n?'<span class="num">기사 '+n+'편</span>':'')+'<span>'+esc(fmtAdded(t.addedAt))+'</span></span>'
@@ -455,7 +454,7 @@ const fmtAdded=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||"")?fmtD(s)+" 추가":"";
 const WKEY="scrap.words";
 function loadWords(){try{const o=JSON.parse(localStorage.getItem(WKEY)||"{}");return new Map(Object.entries(o&&typeof o==="object"?o:{}).filter(([k,v])=>v&&typeof v==="object"&&v.term));}catch(e){return new Map();}}
 function saveWords(){try{localStorage.setItem(WKEY,JSON.stringify(Object.fromEntries(S.terms)));return true;}catch(e){toast("이 기기에 저장하지 못했어요. 저장 공간을 확인해 주세요");return false;}}
-const norm=s=>String(s||"").toLowerCase().replace(/[\s()]/g,"");
+const norm=s=>String(s||"").toLowerCase().replace(/[\s()·]/g,"");
 function findIn(map,q){const n=norm(q);if(!n)return null;
   for(const[id,t]of map){if([t.term,...(Array.isArray(t.aliases)?t.aliases:[])].some(a=>norm(a)===n))return id;}
   return null;}
@@ -837,37 +836,42 @@ function showTermSheet(html){$("tbody").innerHTML=html;
   $("tsheet").hidden=$("tsheetbg").hidden=false;$("tsheet").scrollTop=0;$("tclose").focus({preventScroll:true});}
 function closeTerm(back){flushNote();LK=null;$("tsheet").hidden=$("tsheetbg").hidden=true;
   if(back&&termFrom&&termFrom.isConnected)try{termFrom.focus({preventScroll:true});}catch(e){}}
-const dictBtn=w=>'<a class="btn btn-ghost" href="'+esc(dictURL(w))+'" target="_blank" rel="noopener">지식백과 ↗</a>';
-const wikiNote=(title,url)=>'<p class="t-note">위키백과 <a href="'+esc(url)+'" target="_blank" rel="noopener">‘'+esc(title)+'’ 문서</a>에서 가져온 뜻이에요</p>';
-/* Korean Wikipedia: exact page first, then the best search hit; trimmed to a few sentences */
-const clip=s=>{s=String(s||"").replace(/\s+/g," ").trim();if(s.length<=280)return s;const c=s.slice(0,280),i=c.lastIndexOf(". ");return (i>80?c.slice(0,i+1):c+"…");};
-async function wiki(q){
-  const page=async t=>{const r=await fetch("https://ko.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(t.replace(/ /g,"_"))+"?redirect=true");
-    if(!r.ok)return null;const j=await r.json();return j&&j.type==="standard"&&j.extract?j:null;};
-  let j=await page(q);
-  if(!j){const r=await fetch("https://ko.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=3&srsearch="+encodeURIComponent(q));
-    /* a search hit only counts if it is plainly about the word, so nonsense input finds nothing */
-    const fits=c=>{const a=norm(c.title),b=norm(q);return a.includes(b)||b.includes(a)||norm(c.extract).includes(b);};
-    if(r.ok){const s=await r.json();for(const h of(s.query&&s.query.search)||[]){const c=await page(h.title);if(c&&fits(c)){j=c;break;}}}}
-  if(!j)return null;
-  return{title:j.title,text:clip(j.extract),url:(j.content_urls&&j.content_urls.mobile&&j.content_urls.mobile.page)||"https://ko.wikipedia.org/wiki/"+encodeURIComponent(j.title)};
+/* hidden dictionary (data/dict.json): never listed anywhere, only consulted when a word is looked up */
+let DICT=null;
+async function loadDict(){
+  if(DICT)return DICT;
+  const r=await fetch("data/dict.json",{cache:"no-cache"});if(!r.ok)throw new Error("dict "+r.status);
+  const d=await r.json(),idx=new Map();
+  Object.entries(d&&typeof d==="object"?d:{}).forEach(([term,e])=>{[term,...(Array.isArray(e.a)?e.a:[])].forEach(n=>{const k=norm(n);if(k&&!idx.has(k))idx.set(k,term);});});
+  DICT={d,idx};return DICT;
+}
+/* "기대신용손실(ECL)" is tried whole, without the brackets, and as the bracketed part alone */
+function dictFind(D,q){
+  const tries=[q,q.replace(/\(.*?\)/g,""),...(q.match(/\((.*?)\)/g)||[]).map(s=>s.slice(1,-1))];
+  for(const t of tries){const term=D.idx.get(norm(t));if(term)return term;}
+  return null;
 }
 async function lookup(q,from){
   q=String(q||"").trim().replace(/\s+/g," ").slice(0,40);if(!q)return;
   const own=findIn(S.terms,q);if(own){openTerm(own);return;}
   const seq=++lookSeq;LK={q,from,state:"loading"};drawLookup();
-  let w=null,off=false;try{w=await wiki(q);}catch(e){off=true;}
+  let D=null;try{D=await loadDict();}catch(e){}
   if(seq!==lookSeq||!LK)return;
-  LK.state=w?"found":off?"offline":"none";if(w)Object.assign(LK,w);drawLookup();
+  const term=D&&dictFind(D,q);
+  if(term){const e=D.d[term];Object.assign(LK,{state:"found",term,field:e.f||"",text:e.d,aliases:[term,...(Array.isArray(e.a)?e.a:[])]});
+    const mine=findIn(S.terms,term);if(mine){openTerm(mine);return;}}
+  else LK.state=D?"none":"offline";
+  drawLookup();
 }
 function drawLookup(){const L=LK;if(!L)return;
-  let h='<div class="t-top"><span>뜻 찾기</span></div><h2 id="tsheet-h">'+esc(L.q)+'</h2>';
+  let h='<div class="t-top'+(L.field?' f-'+(FK[L.field]||"x"):'')+'">'+(L.field?'<span class="tag">'+esc(L.field)+'</span>':'')+'<span>뜻 찾기</span></div>'
+    +'<h2 id="tsheet-h">'+esc(L.term||L.q)+'</h2>';
   if(L.state==="loading"){showTermSheet(h+'<p class="t-desc">뜻을 찾는 중이에요…</p>');return;}
-  h+=(L.state==="found"?'<p class="t-desc">'+esc(L.text)+'</p>'+wikiNote(L.title,L.url)
-      :'<p class="t-desc">'+(L.state==="offline"?"인터넷에 연결되지 않아 뜻을 찾지 못했어요.":"바로 보여 줄 뜻을 찾지 못했어요. 지식백과에서 찾아보고, 아래에 직접 적어 저장할 수 있어요.")+'</p>')
+  h+=(L.state==="found"?'<p class="t-desc">'+esc(L.text)+'</p>'+(norm(L.term)!==norm(L.q)?'<p class="t-note">‘'+esc(L.q)+'’(으)로 찾은 결과예요</p>':'')
+      :'<p class="t-desc">'+(L.state==="offline"?"인터넷에 연결되지 않아 뜻을 찾지 못했어요. 연결된 뒤 다시 찾아 주세요.":"사전에 없는 단어예요. 아래에 뜻을 직접 적어 용어집에 저장할 수 있어요.")+'</p>')
     +'<label class="memo-l" for="wnew"><span>용어집에 적을 뜻</span><em>고쳐 써도 돼요</em></label>'
     +'<textarea class="wnote" id="wnew" rows="4" placeholder="뜻이나 기억할 내용을 적어 두세요">'+esc(L.state==="found"?L.text:"")+'</textarea>'
-    +'<div class="t-acts"><button class="btn btn-read" data-wadd>용어집에 추가</button>'+dictBtn(L.q)+'</div>'
+    +'<div class="t-acts"><button class="btn btn-read" data-wadd>용어집에 추가</button></div>'
     +'<p class="t-note">추가하지 않고 닫으면 찾아보기만 하고 끝나요.</p>';
   showTermSheet(h);
 }
@@ -877,14 +881,17 @@ function openTerm(id){const t=S.terms.get(id);if(!t)return;LK=null;
     +'<h2 id="tsheet-h">'+esc(t.term)+'</h2>'
     +'<label class="memo-l" for="wmemo"><span>뜻 · 내 메모</span><em id="wst"></em></label>'
     +'<textarea class="wnote" id="wmemo" data-wid="'+esc(id)+'" rows="4" placeholder="뜻이나 기억할 내용을 적어 두세요">'+esc(t.desc||"")+'</textarea>'
-    +(t.url?wikiNote(t.title||t.term,t.url):'')
     +(from?'<p class="t-note">‘'+esc(from.title)+'’ 기사를 읽다 추가했어요</p>':'')
     +(rel.length?'<div class="t-sec"><div class="qa-l">이 단어가 나온 기사</div>'+rel.map(a=>'<button class="row" data-goto="'+esc(a.id)+'">'+esc(a.title)+'<small>'+fmtLong(a.date)+' · '+esc(a.field)+'</small></button>').join("")+'</div>':'')
-    +'<div class="t-acts">'+dictBtn(t.term)+'<button class="btn btn-del" data-wdel="'+esc(id)+'">용어집에서 삭제</button></div>');
+    +'<div class="t-acts"><button class="btn btn-del" data-wdel="'+esc(id)+'">용어집에서 삭제</button></div>');
 }
 function addWord(){const L=LK;if(!L||L.state==="loading")return;
-  const id="w-"+norm(L.q),w={term:L.q,desc:($("wnew")?$("wnew").value:"").trim(),addedAt:todayS(),updatedAt:new Date().toISOString()};
-  if(L.state==="found"){w.title=L.title;w.url=L.url;}
+  const name=L.term||L.q,id="w-"+norm(name);
+  const w={term:name,desc:($("wnew")?$("wnew").value:"").trim(),addedAt:todayS(),updatedAt:new Date().toISOString()};
+  /* keep the dictionary's other spellings plus what I typed, so every form gets underlined */
+  const al=[...(L.aliases||[name]),L.q].filter((x,i,a)=>a.findIndex(y=>norm(y)===norm(x))===i);
+  if(al.length>1)w.aliases=al;
+  if(L.field)w.field=L.field;
   if(L.from&&S.articles.has(L.from))w.from=L.from;
   S.terms.set(id,w);if(!saveWords()){S.terms.delete(id);return;}
   buildTermIndex();render();openTerm(id);toast("용어집에 추가했어요");
